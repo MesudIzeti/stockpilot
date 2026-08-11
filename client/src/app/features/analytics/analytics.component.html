@@ -1,0 +1,196 @@
+<div class="analytics">
+
+  <!-- Page Header + Controls -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Analytics</h1>
+      <p class="page-desc">Revenue, profit, and inventory velocity</p>
+    </div>
+    <div class="header-controls">
+
+      <!-- Currency selector -->
+      <mat-form-field class="currency-field" appearance="outline" subscriptSizing="dynamic">
+        <mat-select [value]="selectedCurrency" (valueChange)="onCurrencyChange($event)">
+          @for (c of currencies; track c.code) {
+            <mat-option [value]="c.code">{{ c.symbol }} {{ c.code }} — {{ c.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Period selector -->
+      <div class="period-selector">
+        <button mat-button [class.period-active]="period === 7"  (click)="setPeriod(7)">7D</button>
+        <button mat-button [class.period-active]="period === 14" (click)="setPeriod(14)">14D</button>
+        <button mat-button [class.period-active]="period === 30" (click)="setPeriod(30)">30D</button>
+        <button mat-button [class.period-active]="period === 60" (click)="setPeriod(60)">60D</button>
+        <button mat-button [class.period-active]="period === 90" (click)="setPeriod(90)">90D</button>
+      </div>
+
+    </div>
+  </div>
+
+  @if (loading) {
+    <div class="loading-center">
+      <mat-spinner />
+    </div>
+  } @else {
+
+    <!-- KPI Cards -->
+    <div class="kpi-row">
+      <mat-card class="kpi-card">
+        <mat-card-content>
+          <div class="kpi-icon blue"><mat-icon>attach_money</mat-icon></div>
+          <div class="kpi-info">
+            <span class="kpi-value">{{ currencySymbol }}{{ totalRevenue * exchangeRate | number:'1.2-2' }}</span>
+            <span class="kpi-label">Total Revenue</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="kpi-card">
+        <mat-card-content>
+          <div class="kpi-icon green"><mat-icon>trending_up</mat-icon></div>
+          <div class="kpi-info">
+            <span class="kpi-value">{{ currencySymbol }}{{ totalProfit * exchangeRate | number:'1.2-2' }}</span>
+            <span class="kpi-label">Total Profit</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="kpi-card">
+        <mat-card-content>
+          <div class="kpi-icon purple"><mat-icon>receipt_long</mat-icon></div>
+          <div class="kpi-info">
+            <span class="kpi-value">{{ totalTransactions }}</span>
+            <span class="kpi-label">Transactions</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="kpi-card">
+        <mat-card-content>
+          <div class="kpi-icon orange"><mat-icon>percent</mat-icon></div>
+          <div class="kpi-info">
+            <span class="kpi-value">{{ avgMargin | number:'1.1-1' }}%</span>
+            <span class="kpi-label">Avg. Margin</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Revenue & Profit Trend -->
+    <mat-card class="chart-card">
+      <div class="chart-header">
+        <div>
+          <h3 class="chart-title">Revenue & Profit</h3>
+          <p class="chart-sub">Last {{ period }} days — daily breakdown</p>
+        </div>
+      </div>
+      @if (trendData.length === 0) {
+        <div class="empty-chart">
+          <mat-icon>bar_chart</mat-icon>
+          <p>No sales data for this period</p>
+        </div>
+      } @else {
+        <div class="chart-wrap">
+          <canvas #revenueChart></canvas>
+        </div>
+      }
+    </mat-card>
+
+    <!-- Top Products + Category -->
+    <div class="chart-row">
+
+      <mat-card class="chart-card">
+        <div class="chart-header">
+          <div>
+            <h3 class="chart-title">Top Products</h3>
+            <p class="chart-sub">By units sold</p>
+          </div>
+        </div>
+        @if (topProducts.length === 0) {
+          <div class="empty-chart">
+            <mat-icon>inventory_2</mat-icon>
+            <p>No product sales in this period</p>
+          </div>
+        } @else {
+          <div class="chart-wrap">
+            <canvas #topProductsChart></canvas>
+          </div>
+        }
+      </mat-card>
+
+      <mat-card class="chart-card">
+        <div class="chart-header">
+          <div>
+            <h3 class="chart-title">Revenue by Category</h3>
+            <p class="chart-sub">Share of total revenue</p>
+          </div>
+        </div>
+        @if (categoryData.length === 0) {
+          <div class="empty-chart">
+            <mat-icon>category</mat-icon>
+            <p>No category data in this period</p>
+          </div>
+        } @else {
+          <div class="chart-wrap chart-wrap-donut">
+            <canvas #categoryChart></canvas>
+          </div>
+        }
+      </mat-card>
+
+    </div>
+
+    <!-- Stock Runway Table -->
+    <mat-card class="table-card">
+      <div class="chart-header">
+        <div>
+          <h3 class="chart-title">Stock Runway</h3>
+          <p class="chart-sub">Estimated days until each product runs out, based on sales velocity</p>
+        </div>
+      </div>
+
+      @if (velocityData.length === 0) {
+        <div class="empty-chart">
+          <mat-icon>inventory</mat-icon>
+          <p>No stock data available</p>
+        </div>
+      } @else {
+        <table mat-table [dataSource]="velocityData" class="full-width">
+
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Product</th>
+            <td mat-cell *matCellDef="let row">{{ row.name }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="current_stock">
+            <th mat-header-cell *matHeaderCellDef>In Stock</th>
+            <td mat-cell *matCellDef="let row">
+              {{ row.current_stock }} {{ row.unit }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="units_per_day">
+            <th mat-header-cell *matHeaderCellDef>Sales / Day</th>
+            <td mat-cell *matCellDef="let row">
+              {{ row.units_per_day | number:'1.1-2' }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="days_until_stockout">
+            <th mat-header-cell *matHeaderCellDef>Runway</th>
+            <td mat-cell *matCellDef="let row">
+              <span class="runway-badge" [ngClass]="stockoutClass(row.days_until_stockout)">
+                {{ stockoutLabel(row.days_until_stockout) }}
+              </span>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="velocityColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: velocityColumns;"></tr>
+        </table>
+      }
+    </mat-card>
+
+  }
+</div>

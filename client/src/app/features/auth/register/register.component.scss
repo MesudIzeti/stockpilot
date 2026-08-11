@@ -1,0 +1,218 @@
+// ── Auth Screen ───────────────────────────────────────────────────────────────
+
+.auth-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(145deg, #0F172A 0%, #1A1F35 60%, #0F172A 100%);
+  padding: 24px;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 440px;
+  padding: 8px 8px 28px;
+  background: #ffffff !important;
+  border-radius: 20px !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow:
+    0 0 0 1px rgba(79, 70, 229, 0.12),
+    0 8px 16px rgba(0, 0, 0, 0.24),
+    0 32px 48px rgba(0, 0, 0, 0.32) !important;
+}
+
+// ── Brand ─────────────────────────────────────────────────────────────────────
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 28px;
+  font-weight: 800;
+  color: #0F172A;
+  margin-bottom: 6px;
+  letter-spacing: -0.6px;
+
+  mat-icon {
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+    color: #4F46E5;
+    background: #EEF2FF;
+    border-radius: 10px;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+  }
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #64748B;
+  margin: 0 0 28px;
+  letter-spacing: 0.01em;
+}
+
+// ── Form ──────────────────────────────────────────────────────────────────────
+
+.full-width {
+  width: 100%;
+}
+
+.error-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #FEE2E2;
+  color: #7F1D1D;
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  font-weight: 500;
+  border-left: 3px solid #DC2626;
+}
+
+.submit-btn {
+  margin-top: 8px;
+  height: 48px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// ── Alt Link ──────────────────────────────────────────────────────────────────
+
+.alt-link {
+  text-align: center;
+  margin-top: 22px;
+  font-size: 14px;
+  color: #64748B;
+
+  a {
+    color: #4F46E5;
+    text-decoration: none;
+    font-weight: 600;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// ── OTP Verification Step ─────────────────────────────────────────────────────
+
+.otp-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 4px 0 0;
+}
+
+.otp-icon-wrap {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #EEF2FF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  border: 2px solid #C7D2FE;
+}
+
+.otp-icon {
+  font-size: 34px;
+  width: 34px;
+  height: 34px;
+  color: #4F46E5;
+}
+
+.otp-title {
+  margin: 0 0 8px;
+  font-size: 22px;
+  font-weight: 800;
+  color: #0F172A;
+  letter-spacing: -0.3px;
+}
+
+.otp-desc {
+  margin: 0 0 30px;
+  font-size: 14px;
+  color: #64748B;
+  line-height: 1.65;
+}
+
+.otp-boxes {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.otp-box {
+  width: 48px;
+  height: 58px;
+  border: 2px solid #E2E8F0;
+  border-radius: 12px;
+  font-size: 24px;
+  font-weight: 700;
+  text-align: center;
+  background: #F8FAFC;
+  color: #0F172A;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+  caret-color: transparent;
+  font-family: 'Inter', system-ui, monospace;
+
+  &:focus {
+    border-color: #4F46E5;
+    background: #FFFFFF;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+  }
+}
+
+.resend-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 18px;
+  font-size: 13px;
+  color: #94A3B8;
+}
+
+.resend-timer {
+  font-weight: 700;
+  color: #4F46E5;
+}
+
+.resend-btn {
+  font-size: 13px;
+  font-weight: 700;
+  color: #4F46E5;
+  padding: 0 4px;
+  min-width: 0;
+  line-height: 1;
+}
+
+.back-btn {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #94A3B8;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+}

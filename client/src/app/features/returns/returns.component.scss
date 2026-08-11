@@ -1,0 +1,99 @@
+// ── Returns Page ─────────────────────────────────────────────────────────────
+
+:host {
+  display: block;
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  gap: 16px;
+
+  h1 {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 800;
+    color: #0F172A;
+    letter-spacing: -0.4px;
+    line-height: 1.15;
+  }
+}
+
+.page-title-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.page-desc {
+  margin: 0;
+  font-size: 12.5px;
+  color: #94A3B8;
+  font-weight: 400;
+}
+
+.spinner-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 64px 0;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 64px 0;
+  color: #94A3B8;
+  text-align: center;
+
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    opacity: 0.3;
+  }
+
+  p {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #64748B;
+  }
+
+  span { font-size: 13px; }
+}
+
+.products-cell {
+  max-width: 220px;
+  white-space: normal;
+  line-height: 1.55;
+  font-size: 13px;
+}
+
+.amount {
+  font-weight: 700;
+  color: #DC2626;
+  font-variant-numeric: tabular-nums;
+}
+
+.date-cell {
+  white-space: nowrap;
+  font-size: 13px;
+  color: #64748B;
+}
+
+.reason-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1px;
+}
+
+.reason-refund   { background: #D1FAE5; color: #065F46; }
+.reason-warranty { background: #FEF3C7; color: #78350F; }
+.reason-exchange { background: #EEF2FF; color: #3730A3; }

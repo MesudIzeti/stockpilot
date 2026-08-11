@@ -1,0 +1,340 @@
+// ── Sales & Returns ───────────────────────────────────────────────────────────
+
+:host {
+  display: block;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.page-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.page-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  h1 {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 800;
+    color: #0F172A;
+    letter-spacing: -0.4px;
+    line-height: 1.15;
+  }
+}
+
+.page-desc {
+  margin: 0;
+  font-size: 12.5px;
+  color: #94A3B8;
+}
+
+.scope-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: #EEF2FF;
+  color: #3730A3;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1px;
+}
+
+// ── Date Filter Bar ───────────────────────────────────────────────────────────
+
+.date-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 10px 16px;
+  margin-bottom: 20px;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  transition: background 0.2s, border-color 0.2s;
+
+  &--active {
+    background: #EEF2FF;
+    border-color: #C7D2FE;
+  }
+}
+
+.dfb-icon {
+  color: #4F46E5;
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.dfb-label {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  margin-right: 4px;
+}
+
+.date-range-field {
+  width: 280px;
+}
+
+.dfb-clear {
+  color: #94A3B8;
+
+  &:hover { color: #DC2626; }
+}
+
+// ── Section Headers ───────────────────────────────────────────────────────────
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+
+  h2 {
+    margin: 0;
+    font-size: 11px;
+    font-weight: 800;
+    color: #94A3B8;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+}
+
+.section-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+
+  &.dot-indigo { background-color: #4F46E5; }
+  &.dot-amber  { background-color: #D97706; }
+  &.dot-emerald { background-color: #059669; }
+  &.dot-red    { background-color: #DC2626; }
+}
+
+.section-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #0F172A;
+  letter-spacing: -0.1px;
+  text-transform: none;
+}
+
+.returns-section-header {
+  margin-top: 36px;
+}
+
+// ── Filter Field ──────────────────────────────────────────────────────────────
+
+.filter-field {
+  width: 280px;
+
+  mat-icon[matPrefix] {
+    margin-right: 4px;
+    color: #94A3B8;
+  }
+}
+
+// ── Loading ───────────────────────────────────────────────────────────────────
+
+.spinner-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 64px 0;
+}
+
+.table-card {
+  margin-bottom: 8px;
+}
+
+.full-width  { width: 100%; }
+.amount      {
+  font-weight: 700;
+  color: #059669;
+  font-variant-numeric: tabular-nums;
+}
+.center      { text-align: center; }
+
+.products-cell {
+  max-width: 220px;
+  white-space: normal;
+  line-height: 1.55;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.categories-cell {
+  max-width: 140px;
+  white-space: normal;
+  line-height: 1.55;
+  font-size: 12.5px;
+  color: #64748B;
+}
+
+.actions-cell {
+  white-space: nowrap;
+  text-align: right;
+}
+
+// ── Return Button ─────────────────────────────────────────────────────────────
+
+.return-btn {
+  font-size: 12px;
+  height: 32px;
+  line-height: 32px;
+  padding: 0 12px;
+  font-weight: 600;
+  border-radius: 8px !important;
+
+  mat-icon {
+    font-size: 15px;
+    width: 15px;
+    height: 15px;
+    vertical-align: middle;
+  }
+}
+
+// ── Returned Badge ────────────────────────────────────────────────────────────
+
+.returned-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: #F1F5F9;
+  color: #94A3B8;
+  font-size: 12px;
+  font-weight: 600;
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+
+  &.fully-returned {
+    background: #D1FAE5;
+    color: #065F46;
+  }
+}
+
+.returned-row td {
+  opacity: 0.6;
+}
+
+// ── Return Status Badge (dedicated column) ────────────────────────────────────
+
+.rs-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11.5px;
+  font-weight: 700;
+  white-space: nowrap;
+  letter-spacing: 0.1px;
+
+  mat-icon {
+    font-size: 13px;
+    width: 13px;
+    height: 13px;
+  }
+
+  &--returned {
+    background: #D1FAE5;
+    color: #065F46;
+  }
+
+  &--partial {
+    background: #FFFBEB;
+    color: #92400E;
+  }
+}
+
+// ── Empty States ──────────────────────────────────────────────────────────────
+
+.empty-state {
+  padding: 52px;
+  text-align: center;
+  color: #94A3B8;
+  font-size: 14px;
+}
+
+.empty-state-returns {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 48px 0;
+  text-align: center;
+  color: #94A3B8;
+
+  mat-icon {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+    opacity: 0.2;
+  }
+
+  p {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: #64748B;
+  }
+
+  span {
+    font-size: 13px;
+  }
+}
+
+// ── Return Reason Badges ──────────────────────────────────────────────────────
+
+.reason-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1px;
+}
+
+.reason-refund {
+  background: #D1FAE5;
+  color: #065F46;
+}
+
+.reason-warranty {
+  background: #FEF3C7;
+  color: #78350F;
+}
+
+.reason-exchange {
+  background: #EEF2FF;
+  color: #3730A3;
+}

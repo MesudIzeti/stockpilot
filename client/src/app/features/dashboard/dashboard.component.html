@@ -1,0 +1,182 @@
+<div class="dashboard">
+
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Dashboard</h1>
+      <p class="page-desc">Your inventory snapshot for today</p>
+    </div>
+  </div>
+
+  @if (loading) {
+    <div class="loading-center">
+      <mat-spinner diameter="44" />
+    </div>
+  } @else {
+
+    <!-- ── KPI Cards ───────────────────────────────────────────────────────── -->
+    <div class="stat-cards">
+
+      <div class="stat-card-wrap">
+        <div class="stat-card-accent accent-indigo"></div>
+        <div class="stat-card-body">
+          <div class="stat-icon-wrap icon-indigo">
+            <mat-icon>inventory_2</mat-icon>
+          </div>
+          <div class="stat-text">
+            <span class="stat-label">Total Products</span>
+            <span class="stat-value">{{ summary?.total_products ?? '—' }}</span>
+          </div>
+        </div>
+      </div>
+
+      @if (isOwner) {
+        <div class="stat-card-wrap">
+          <div class="stat-card-accent accent-emerald"></div>
+          <div class="stat-card-body">
+            <div class="stat-icon-wrap icon-emerald">
+              <mat-icon>attach_money</mat-icon>
+            </div>
+            <div class="stat-text">
+              <span class="stat-label">Today's Revenue</span>
+              <span class="stat-value">${{ summary?.today_revenue | number:'1.2-2' }}</span>
+            </div>
+          </div>
+        </div>
+      }
+
+      <div class="stat-card-wrap">
+        <div class="stat-card-accent accent-amber"></div>
+        <div class="stat-card-body">
+          <div class="stat-icon-wrap icon-amber">
+            <mat-icon>warning_amber</mat-icon>
+          </div>
+          <div class="stat-text">
+            <span class="stat-label">Low Stock Items</span>
+            <span class="stat-value">{{ summary?.low_stock_count ?? '—' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-card-wrap">
+        <div class="stat-card-accent accent-red"></div>
+        <div class="stat-card-body">
+          <div class="stat-icon-wrap icon-red">
+            <mat-icon>remove_shopping_cart</mat-icon>
+          </div>
+          <div class="stat-text">
+            <span class="stat-label">Out of Stock</span>
+            <span class="stat-value">{{ summary?.out_of_stock_count ?? '—' }}</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Low Stock Alerts ───────────────────────────────────────────────── -->
+    <div class="section-header">
+      <div class="section-header-left">
+        <span class="section-dot dot-amber"></span>
+        <span class="section-title">Low Stock Alerts</span>
+      </div>
+      @if (lowStock.length > 0) {
+        <span class="section-count">{{ lowStock.length }} item{{ lowStock.length !== 1 ? 's' : '' }}</span>
+      }
+    </div>
+
+    <mat-card class="table-card">
+      <mat-card-content>
+        @if (lowStock.length === 0) {
+          <div class="empty-state">
+            <div class="empty-icon-wrap">
+              <mat-icon>check_circle</mat-icon>
+            </div>
+            <span class="empty-title">All products are well stocked</span>
+            <span class="empty-sub">No alerts at this time</span>
+          </div>
+        } @else {
+          <table mat-table [dataSource]="lowStock" class="full-width">
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef>Product</th>
+              <td mat-cell *matCellDef="let row" class="cell-product">{{ row.name }}</td>
+            </ng-container>
+            <ng-container matColumnDef="quantity">
+              <th mat-header-cell *matHeaderCellDef>Current Stock</th>
+              <td mat-cell *matCellDef="let row">
+                <span class="low-qty">{{ row.quantity }} {{ row.unit }}</span>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="min_stock_level">
+              <th mat-header-cell *matHeaderCellDef>Min Required</th>
+              <td mat-cell *matCellDef="let row" class="cell-muted">{{ row.min_stock_level }}</td>
+            </ng-container>
+            <ng-container matColumnDef="category">
+              <th mat-header-cell *matHeaderCellDef>Category</th>
+              <td mat-cell *matCellDef="let row" class="cell-muted">{{ row.category_name }}</td>
+            </ng-container>
+            <ng-container matColumnDef="supplier">
+              <th mat-header-cell *matHeaderCellDef>Supplier</th>
+              <td mat-cell *matCellDef="let row" class="cell-muted">{{ row.supplier_name || '—' }}</td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="lowStockColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: lowStockColumns;"></tr>
+          </table>
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <!-- ── Expiry Warnings ────────────────────────────────────────────────── -->
+    <div class="section-header">
+      <div class="section-header-left">
+        <span class="section-dot dot-red"></span>
+        <span class="section-title">Expiry Warnings <span class="section-title-note">— next 7 days</span></span>
+      </div>
+      @if (expiryWarnings.length > 0) {
+        <span class="section-count">{{ expiryWarnings.length }} item{{ expiryWarnings.length !== 1 ? 's' : '' }}</span>
+      }
+    </div>
+
+    <mat-card class="table-card">
+      <mat-card-content>
+        @if (expiryWarnings.length === 0) {
+          <div class="empty-state">
+            <div class="empty-icon-wrap">
+              <mat-icon>event_available</mat-icon>
+            </div>
+            <span class="empty-title">No products expiring soon</span>
+            <span class="empty-sub">You're clear for the next 7 days</span>
+          </div>
+        } @else {
+          <table mat-table [dataSource]="expiryWarnings" class="full-width">
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef>Product</th>
+              <td mat-cell *matCellDef="let row" class="cell-product">{{ row.name }}</td>
+            </ng-container>
+            <ng-container matColumnDef="expiry_date">
+              <th mat-header-cell *matHeaderCellDef>Expiry Date</th>
+              <td mat-cell *matCellDef="let row">{{ row.expiry_date | date:'mediumDate' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="days_until_expiry">
+              <th mat-header-cell *matHeaderCellDef>Days Left</th>
+              <td mat-cell *matCellDef="let row">
+                @if (row.days_until_expiry < 0) {
+                  <span class="badge expired">Expired</span>
+                } @else if (row.days_until_expiry <= 3) {
+                  <span class="badge critical">{{ row.days_until_expiry }}d left</span>
+                } @else {
+                  <span class="badge warning">{{ row.days_until_expiry }}d left</span>
+                }
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="quantity">
+              <th mat-header-cell *matHeaderCellDef>In Stock</th>
+              <td mat-cell *matCellDef="let row" class="cell-muted">{{ row.quantity }} {{ row.unit }}</td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="expiryColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: expiryColumns;"></tr>
+          </table>
+        }
+      </mat-card-content>
+    </mat-card>
+
+  }
+</div>

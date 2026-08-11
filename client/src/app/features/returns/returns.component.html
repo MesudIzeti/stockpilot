@@ -1,0 +1,78 @@
+<div class="page-header">
+  <div class="page-title-wrap">
+    <h1>Returns</h1>
+    <p class="page-desc">Track refunds and product returns</p>
+  </div>
+  <button mat-flat-button (click)="openReturnDialog()">
+    <mat-icon>assignment_return</mat-icon>
+    Process Return
+  </button>
+</div>
+
+@if (loading) {
+  <div class="spinner-wrap">
+    <mat-spinner diameter="48" />
+  </div>
+} @else if (returns.length === 0) {
+  <div class="empty-state">
+    <mat-icon>assignment_return</mat-icon>
+    <p>No returns yet</p>
+    <span>Processed returns will appear here.</span>
+  </div>
+} @else {
+  <mat-card>
+    <mat-table [dataSource]="returns">
+
+      <ng-container matColumnDef="return_number">
+        <th mat-header-cell *matHeaderCellDef>Return #</th>
+        <td mat-cell *matCellDef="let r">
+          <strong>#{{ r.return_number }}</strong>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="sale_id">
+        <th mat-header-cell *matHeaderCellDef>Sale</th>
+        <td mat-cell *matCellDef="let r">Sale #{{ r.sale_id }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="product_names">
+        <th mat-header-cell *matHeaderCellDef>Products</th>
+        <td mat-cell *matCellDef="let r" class="products-cell">
+          {{ r.product_names || '—' }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="reason">
+        <th mat-header-cell *matHeaderCellDef>Reason</th>
+        <td mat-cell *matCellDef="let r">
+          <span class="reason-badge reason-{{ r.reason }}">
+            {{ reasonLabel(r.reason) }}
+          </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="total_refund">
+        <th mat-header-cell *matHeaderCellDef>Refund</th>
+        <td mat-cell *matCellDef="let r" class="amount">
+          ${{ r.total_refund | number:'1.2-2' }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="performed_by">
+        <th mat-header-cell *matHeaderCellDef>Processed By</th>
+        <td mat-cell *matCellDef="let r">{{ r.performed_by || '—' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="created_at">
+        <th mat-header-cell *matHeaderCellDef>Date</th>
+        <td mat-cell *matCellDef="let r" class="date-cell">
+          {{ r.created_at | date:'dd MMM yyyy, HH:mm' }}
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columns"></tr>
+      <tr mat-row *matRowDef="let row; columns: columns;"></tr>
+
+    </mat-table>
+  </mat-card>
+}

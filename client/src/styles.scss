@@ -1,0 +1,378 @@
+@use '@angular/material' as mat;
+
+html {
+  height: 100%;
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$violet-palette,
+        tertiary: mat.$blue-palette,
+      ),
+      typography: Roboto,
+      density: 0,
+    )
+  );
+
+  // ── StockPilot Design Tokens ─────────────────────────────────────────────────
+  // Override Angular Material M3 system tokens with the StockPilot palette.
+  // Indigo 600 primary on a clean Slate scale background.
+
+  --mat-sys-primary:                   #4F46E5;
+  --mat-sys-on-primary:                #ffffff;
+  --mat-sys-primary-container:         #E0E7FF;
+  --mat-sys-on-primary-container:      #312E81;
+  --mat-sys-secondary:                 #64748B;
+  --mat-sys-on-secondary:              #ffffff;
+  --mat-sys-secondary-container:       #EEF2FF;
+  --mat-sys-on-secondary-container:    #3730A3;
+  --mat-sys-tertiary:                  #0369A1;
+  --mat-sys-surface:                   #ffffff;
+  --mat-sys-surface-variant:           #F1F5F9;
+  --mat-sys-surface-container-lowest:  #F8FAFC;
+  --mat-sys-surface-container-low:     #F8FAFC;
+  --mat-sys-surface-container:         #F1F5F9;
+  --mat-sys-surface-container-high:    #E2E8F0;
+  --mat-sys-surface-container-highest: #CBD5E1;
+  --mat-sys-on-surface:                #0F172A;
+  --mat-sys-on-surface-variant:        #64748B;
+  --mat-sys-outline:                   #CBD5E1;
+  --mat-sys-outline-variant:           #E2E8F0;
+  --mat-sys-error:                     #DC2626;
+  --mat-sys-on-error:                  #ffffff;
+  --mat-sys-error-container:           #FEE2E2;
+  --mat-sys-on-error-container:        #7F1D1D;
+}
+
+body {
+  color-scheme: light;
+  background-color: #F0F4F9;
+  color: #0F172A;
+  font-family: 'Inter', system-ui, -apple-system, Roboto, sans-serif;
+  margin: 0;
+  height: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// Force Angular Material's sidenav content area to use our page background.
+// mat-sidenav-content renders as .mat-drawer-content which applies its own
+// background from --mat-sys-surface; override it here at the global level.
+.mat-drawer-content {
+  background-color: #F0F4F9 !important;
+}
+
+// ── Global Typography ─────────────────────────────────────────────────────────
+
+* {
+  font-family: 'Inter', system-ui, -apple-system, Roboto, sans-serif;
+}
+
+// ── Angular Material Component Overrides ──────────────────────────────────────
+
+// Buttons: modern rounding + correct weight
+.mat-mdc-button,
+.mat-mdc-outlined-button,
+.mat-mdc-text-button {
+  border-radius: 8px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.01em !important;
+  font-family: 'Inter', system-ui, sans-serif !important;
+}
+
+.mat-mdc-unelevated-button,
+.mat-mdc-raised-button {
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.01em !important;
+  font-family: 'Inter', system-ui, sans-serif !important;
+}
+
+// Cards: modern radius + refined shadow
+// overflow: hidden is required to clip table header backgrounds and long text
+// to the card's border-radius boundary — without it content bleeds outside.
+.mat-mdc-card {
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  box-shadow:
+    0 1px 3px rgba(15, 23, 42, 0.08),
+    0 1px 2px rgba(15, 23, 42, 0.04) !important;
+  border: 1px solid #E2E8F0 !important;
+}
+
+// Form fields: refined border radius
+.mdc-notched-outline__leading  { border-radius: 8px 0 0 8px !important; }
+.mdc-notched-outline__trailing { border-radius: 0 8px 8px 0 !important; }
+
+// Form field label + input text
+.mat-mdc-form-field {
+  font-family: 'Inter', system-ui, sans-serif !important;
+}
+
+// Tables: premium header, clean rows
+.mat-mdc-header-row {
+  background-color: #F8FAFC !important;
+}
+
+.mat-mdc-header-cell {
+  color: #64748B !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  font-family: 'Inter', system-ui, sans-serif !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.6px !important;
+  border-bottom: 2px solid #E2E8F0 !important;
+}
+
+.mat-mdc-cell {
+  color: #0F172A !important;
+  font-family: 'Inter', system-ui, sans-serif !important;
+  border-bottom-color: #F1F5F9 !important;
+  font-size: 13.5px !important;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.mat-mdc-row {
+  transition: background 0.12s ease !important;
+}
+
+.mat-mdc-row:hover .mat-mdc-cell {
+  background-color: #F8FAFC !important;
+}
+
+// Dialogs: modern rounded corners + premium shadow
+.mat-mdc-dialog-container .mdc-dialog__surface {
+  border-radius: 16px !important;
+  box-shadow:
+    0 4px 6px rgba(15, 23, 42, 0.07),
+    0 10px 15px rgba(15, 23, 42, 0.10),
+    0 20px 25px rgba(15, 23, 42, 0.05) !important;
+}
+
+.mat-mdc-dialog-title {
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  color: #0F172A !important;
+  letter-spacing: -0.2px !important;
+  font-family: 'Inter', system-ui, sans-serif !important;
+}
+
+// Select overlay
+.mat-mdc-select-panel {
+  border-radius: 10px !important;
+  box-shadow:
+    0 4px 6px rgba(15, 23, 42, 0.07),
+    0 10px 15px rgba(15, 23, 42, 0.10) !important;
+  border: 1px solid #E2E8F0 !important;
+}
+
+// Option hover
+.mat-mdc-option:hover:not(.mat-mdc-option-disabled) {
+  background: #EEF2FF !important;
+  color: #3730A3 !important;
+}
+
+.mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+  background: #EEF2FF !important;
+}
+
+// Spinner: use primary color
+.mat-mdc-progress-spinner circle {
+  stroke: #4F46E5 !important;
+}
+
+// Checkbox: primary tones
+.mdc-checkbox__background {
+  border-color: #CBD5E1 !important;
+}
+
+// Tooltip
+.mdc-tooltip__surface {
+  border-radius: 6px !important;
+  font-family: 'Inter', system-ui, sans-serif !important;
+  font-size: 12px !important;
+  background-color: #1E293B !important;
+  color: #F1F5F9 !important;
+}
+
+// Dialog actions padding
+.mat-mdc-dialog-actions {
+  padding: 8px 20px 20px !important;
+  gap: 8px;
+}
+
+// mat-card-header spacing
+.mat-mdc-card-header {
+  padding: 20px 20px 0 !important;
+}
+
+.mat-mdc-card-content:last-child {
+  padding-bottom: 16px !important;
+}
+
+// ── Snackbar / Toast ──────────────────────────────────────────────────────────
+
+.app-snack-bar .mdc-snackbar__surface {
+  background-color: #0F172A !important;
+  border-radius: 12px !important;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.30),
+    0 4px 8px rgba(0, 0, 0, 0.20),
+    0 16px 32px rgba(0, 0, 0, 0.18) !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  min-width: 300px !important;
+  max-width: 460px !important;
+  padding: 0 6px 0 20px !important;
+}
+
+.app-snack-bar .mdc-snackbar__label {
+  color: #F1F5F9 !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.01em !important;
+  line-height: 1.45 !important;
+  padding: 15px 8px 15px 0 !important;
+  font-family: 'Inter', system-ui, sans-serif !important;
+}
+
+.app-snack-bar .mat-mdc-button.mat-mdc-snack-bar-action {
+  color: rgba(255, 255, 255, 0.45) !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.02em !important;
+  padding: 0 12px !important;
+  border-radius: 8px !important;
+  min-width: 48px !important;
+  margin-right: 2px !important;
+}
+
+.app-snack-bar .mat-mdc-button.mat-mdc-snack-bar-action:hover {
+  color: rgba(255, 255, 255, 0.90) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+// ── Sidebar Dark-Theme Overrides ──────────────────────────────────────────────
+// Force Angular Material's internal drawer and list elements to render correctly
+// on the dark navy sidebar background.
+
+.sidenav {
+  // Override surface token so mat-drawer-inner-container picks it up
+  --mat-sys-surface: #0F172A !important;
+  background-color: #0F172A !important;
+
+  .mat-drawer-inner-container {
+    background-color: #0F172A !important;
+  }
+
+  // Nav list item text color
+  .mdc-list-item__primary-text,
+  .mat-mdc-list-item .mdc-list-item__content,
+  span[matListItemTitle] {
+    color: #94A3B8 !important;
+  }
+
+  // Nav icon color
+  .mat-mdc-list-item mat-icon,
+  mat-icon[matListItemIcon] {
+    color: #64748B !important;
+  }
+
+  // Active nav item
+  .active-link {
+    .mdc-list-item__primary-text,
+    .mat-mdc-list-item .mdc-list-item__content,
+    span[matListItemTitle] {
+      color: #C7D2FE !important;
+    }
+    mat-icon[matListItemIcon],
+    .mat-mdc-list-item mat-icon {
+      color: #818CF8 !important;
+    }
+  }
+
+  // Hover micro-interaction for non-active nav items
+  a[mat-list-item]:not(.active-link) {
+    .mdc-list-item__primary-text,
+    span[matListItemTitle] {
+      transition: color 0.18s ease;
+    }
+    mat-icon[matListItemIcon],
+    .mat-mdc-list-item mat-icon {
+      transition: color 0.18s ease;
+    }
+  }
+
+  a[mat-list-item]:not(.active-link):hover {
+    .mdc-list-item__primary-text,
+    span[matListItemTitle] {
+      color: #E2E8F0 !important;
+    }
+    mat-icon[matListItemIcon],
+    .mat-mdc-list-item mat-icon {
+      color: #94A3B8 !important;
+    }
+  }
+
+  // Mat list item hover ripple
+  .mat-mdc-list-item .mat-mdc-list-item-ripple {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+  }
+
+  // Footer icon buttons
+  .mat-mdc-icon-button mat-icon {
+    color: #64748B !important;
+  }
+
+  // Sidenav border (Material adds a right border by default)
+  &.mat-drawer {
+    border-right: none !important;
+  }
+}
+
+// ── Auth Card: force white surface + strong shadow ────────────────────────────
+
+.auth-card {
+  &.mat-mdc-card,
+  .mat-mdc-card {
+    background: #ffffff !important;
+  }
+
+  .mat-mdc-card-header {
+    padding: 24px 24px 0 !important;
+  }
+
+  .mat-mdc-card-content {
+    padding: 0 24px !important;
+  }
+}
+
+// ── Dashboard / Feature page card headers ─────────────────────────────────────
+
+.mat-mdc-card-header .mat-mdc-card-title {
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  color: #0F172A !important;
+}
+
+// ── Stat card content padding ─────────────────────────────────────────────────
+
+.stat-card .mat-mdc-card-content,
+.kpi-card .mat-mdc-card-content {
+  padding: 22px !important;
+}
+
+// ── Responsive scroll guard ───────────────────────────────────────────────────
+
+.overflow-x-auto {
+  overflow-x: auto;
+}
+
+// ── Mobile friendly tables ────────────────────────────────────────────────────
+
+@media (max-width: 680px) {
+  mat-sidenav-container {
+    .main-content {
+      padding: 16px !important;
+    }
+  }
+}

@@ -1,0 +1,135 @@
+<div class="auth-container">
+  <mat-card class="auth-card">
+    <mat-card-header>
+      <div class="brand">
+        <mat-icon>inventory_2</mat-icon>
+        <span>StockPilot</span>
+      </div>
+      @if (step === 'form') {
+        <p class="subtitle">Create your account</p>
+      }
+    </mat-card-header>
+
+    <mat-card-content>
+
+      @if (error) {
+        <div class="error-banner">{{ error }}</div>
+      }
+
+      <!-- ── Step 1: Registration form ─────────────────────────────────── -->
+      @if (step === 'form') {
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Name</mat-label>
+            <input matInput formControlName="name" placeholder="Your name or business name" />
+            <mat-icon matSuffix>person</mat-icon>
+            @if (form.get('name')?.invalid && form.get('name')?.touched) {
+              <mat-error>Name is required</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Email</mat-label>
+            <input matInput formControlName="email" type="email" placeholder="you@example.com" />
+            <mat-icon matSuffix>email</mat-icon>
+            @if (form.get('email')?.invalid && form.get('email')?.touched) {
+              <mat-error>Enter a valid email address</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Password</mat-label>
+            <input matInput formControlName="password" [type]="hidePassword ? 'password' : 'text'" />
+            <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
+              <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+            @if (form.get('password')?.hasError('required') && form.get('password')?.touched) {
+              <mat-error>Password is required</mat-error>
+            }
+            @if (form.get('password')?.hasError('minlength') && form.get('password')?.touched) {
+              <mat-error>Password must be at least 6 characters</mat-error>
+            }
+          </mat-form-field>
+
+          <button
+            mat-flat-button
+            class="full-width submit-btn"
+            type="submit"
+            [disabled]="loading || form.invalid"
+          >
+            @if (loading) {
+              <mat-spinner diameter="22" />
+            } @else {
+              Create Account
+            }
+          </button>
+        </form>
+
+        <p class="alt-link">
+          Already have an account? <a routerLink="/login">Sign in</a>
+        </p>
+      }
+
+      <!-- ── Step 2: OTP verification ──────────────────────────────────── -->
+      @if (step === 'otp') {
+        <div class="otp-step">
+          <div class="otp-icon-wrap">
+            <mat-icon class="otp-icon">mark_email_read</mat-icon>
+          </div>
+
+          <h2 class="otp-title">Check your inbox</h2>
+          <p class="otp-desc">
+            We sent a 6-digit code to<br>
+            <strong>{{ pendingEmail }}</strong>
+          </p>
+
+          <div class="otp-boxes">
+            @for (i of otpIndices; track i) {
+              <input
+                #otpInput
+                type="text"
+                inputmode="numeric"
+                maxlength="1"
+                class="otp-box"
+                autocomplete="one-time-code"
+                (keydown)="onOtpKeydown($event, i)"
+                (input)="onOtpInput($event, i)"
+                (paste)="onOtpPaste($event)"
+              />
+            }
+          </div>
+
+          <button
+            mat-flat-button
+            class="full-width submit-btn"
+            [disabled]="!otpComplete || otpLoading"
+            (click)="submitOtp()"
+          >
+            @if (otpLoading) {
+              <mat-spinner diameter="22" />
+            } @else {
+              Verify &amp; Activate Account
+            }
+          </button>
+
+          <div class="resend-row">
+            <span>Didn't receive it?</span>
+            @if (resendCooldown > 0) {
+              <span class="resend-timer">Resend in {{ resendCooldown }}s</span>
+            } @else {
+              <button mat-button class="resend-btn" [disabled]="resendLoading" (click)="resendCode()">
+                @if (resendLoading) { Sending… } @else { Resend code }
+              </button>
+            }
+          </div>
+
+          <button mat-button class="back-btn" (click)="step = 'form'; error = ''">
+            <mat-icon>arrow_back</mat-icon>
+            Use a different email
+          </button>
+        </div>
+      }
+
+    </mat-card-content>
+  </mat-card>
+</div>

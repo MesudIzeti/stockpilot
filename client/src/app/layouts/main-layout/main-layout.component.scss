@@ -1,0 +1,395 @@
+// ── App Shell ──────────────────────────────────────────────────────────────────
+
+.sidenav-container {
+  height: 100vh;
+}
+
+// ── Sidebar ───────────────────────────────────────────────────────────────────
+
+.sidenav {
+  width: 248px;
+  display: flex;
+  flex-direction: column;
+  background-color: #0F172A;
+  border-right: none;
+
+  // Override Material M3 tokens so nav items render in light text on dark bg
+  --mat-sys-on-surface:                #CBD5E1;
+  --mat-sys-on-surface-variant:        #64748B;
+  --mat-sys-outline-variant:           rgba(255, 255, 255, 0.08);
+  --mat-sys-surface-container:         rgba(255, 255, 255, 0.06);
+  --mat-sys-surface-container-low:     rgba(255, 255, 255, 0.03);
+  --mat-sys-secondary-container:       rgba(79, 70, 229, 0.20);
+  --mat-sys-on-secondary-container:    #C7D2FE;
+
+  // Material list item token overrides
+  --mat-list-list-item-label-text-color:         #94A3B8;
+  --mat-list-list-item-leading-icon-color:        #64748B;
+  --mat-list-list-item-hover-state-layer-color:  rgba(255, 255, 255, 0.08);
+  --mat-list-list-item-pressed-state-layer-color: rgba(255, 255, 255, 0.08);
+
+  // Icon button tokens
+  --mat-icon-button-icon-color:    #64748B;
+  --mat-icon-button-state-layer-color: rgba(255, 255, 255, 0.06);
+
+  // Nav item typography
+  --mat-list-list-item-label-text-size:     13.5px;
+  --mat-list-list-item-label-text-weight:   500;
+  --mat-list-list-item-label-text-tracking: 0.15px;
+  --mat-list-list-item-one-line-container-height: 44px;
+}
+
+// ── Brand ─────────────────────────────────────────────────────────────────────
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 22px 20px;
+  font-size: 19px;
+  font-weight: 700;
+  color: #F1F5F9;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  letter-spacing: -0.4px;
+
+  mat-icon {
+    font-size: 26px;
+    width: 26px;
+    height: 26px;
+    color: #818CF8;
+  }
+}
+
+// ── Navigation List ───────────────────────────────────────────────────────────
+
+mat-nav-list {
+  padding: 14px 8px 0;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.active-link {
+  background-color: rgba(79, 70, 229, 0.18) !important;
+  border-radius: 10px !important;
+
+  // Active item text/icon are brighter
+  --mat-list-list-item-label-text-color:    #C7D2FE !important;
+  --mat-list-list-item-leading-icon-color:  #818CF8 !important;
+  --mat-list-list-item-label-text-weight:   600 !important;
+}
+
+// ── Nav Section Label ─────────────────────────────────────────────────────────
+
+.nav-section-label {
+  padding: 18px 12px 5px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #475569;
+  user-select: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  margin: 4px 0 0;
+}
+
+// ── Notification Panel ────────────────────────────────────────────────────────
+
+.notif-panel {
+  margin: 0 8px 6px;
+  background: #1E293B;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  flex-shrink: 0;
+}
+
+.notif-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 8px 10px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.notif-header-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: #FCA5A5;
+  flex-shrink: 0;
+}
+
+.notif-header-title {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #E2E8F0;
+  flex: 1;
+}
+
+.notif-count {
+  background: #DC2626;
+  color: white;
+  font-size: 10.5px;
+  font-weight: 700;
+  min-width: 19px;
+  height: 19px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  flex-shrink: 0;
+}
+
+.notif-close {
+  width: 28px !important;
+  height: 28px !important;
+  line-height: 28px !important;
+  flex-shrink: 0;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: #64748B;
+  }
+}
+
+.notif-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 22px 12px;
+  color: #64748B;
+
+  mat-icon {
+    font-size: 26px;
+    width: 26px;
+    height: 26px;
+    color: #059669;
+    opacity: 0.8;
+  }
+
+  span {
+    font-size: 12px;
+    text-align: center;
+    color: #94A3B8;
+  }
+}
+
+.notif-list {
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.notif-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.notif-item-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.notif-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: #E2E8F0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.notif-detail {
+  font-size: 11px;
+  color: #64748B;
+  margin-top: 2px;
+}
+
+.stock-pill {
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 10px;
+  background: rgba(217, 119, 6, 0.15);
+  color: #FCD34D;
+  letter-spacing: 0.3px;
+
+  &.pill-out {
+    background: rgba(220, 38, 38, 0.15);
+    color: #FCA5A5;
+  }
+}
+
+.notif-more {
+  padding: 6px 12px;
+  font-size: 11px;
+  color: #64748B;
+  text-align: center;
+  font-style: italic;
+}
+
+.notif-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 4px;
+
+  a {
+    width: 100%;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    justify-content: center;
+    color: #818CF8 !important;
+
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
+  }
+}
+
+// ── Sidenav Footer ────────────────────────────────────────────────────────────
+
+.sidenav-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 10px 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  flex-shrink: 0;
+}
+
+.qr-btn {
+  width: 100%;
+  justify-content: flex-start;
+  gap: 8px;
+  color: #64748B !important;
+  font-size: 13px;
+}
+
+.footer-user {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 2px 0;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #64748B;
+  overflow: hidden;
+  flex: 1;
+  min-width: 0;
+
+  mat-icon {
+    color: #475569;
+    flex-shrink: 0;
+  }
+}
+
+.user-info-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+
+  span:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 13px;
+    font-weight: 500;
+    color: #CBD5E1;
+  }
+}
+
+.role-badge {
+  font-size: 10px;
+  font-weight: 700;
+  background: rgba(79, 70, 229, 0.25);
+  color: #A5B4FC;
+  padding: 1px 6px;
+  border-radius: 8px;
+  margin-top: 2px;
+  width: fit-content;
+}
+
+.footer-actions {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+// ── Mobile Top Bar ────────────────────────────────────────────────────────────
+
+.mobile-topbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #0F172A;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.mobile-menu-btn {
+  mat-icon {
+    color: #94A3B8;
+  }
+}
+
+.mobile-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #F1F5F9;
+  letter-spacing: -0.3px;
+
+  mat-icon {
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
+    color: #818CF8;
+  }
+}
+
+// ── Main Content ──────────────────────────────────────────────────────────────
+
+.main-content {
+  overflow-y: auto;
+  background-color: #F0F4F9;
+}
+
+.page-body {
+  padding: 32px;
+
+  @media (max-width: 900px) {
+    padding: 20px 16px;
+  }
+
+  @media (min-width: 1400px) {
+    padding: 36px 48px;
+  }
+}

@@ -1,0 +1,149 @@
+<mat-sidenav-container class="sidenav-container" (backdropClick)="onBackdropClick()">
+
+  <mat-sidenav
+    [mode]="isMobile ? 'over' : 'side'"
+    [opened]="sidenavOpened"
+    class="sidenav"
+  >
+    <div class="brand">
+      <mat-icon>inventory_2</mat-icon>
+      <span>StockPilot</span>
+    </div>
+
+    <mat-nav-list (click)="onNavClick()">
+      <a mat-list-item routerLink="/dashboard" routerLinkActive="active-link">
+        <mat-icon matListItemIcon>dashboard</mat-icon>
+        <span matListItemTitle>Dashboard</span>
+      </a>
+      <a mat-list-item routerLink="/products" routerLinkActive="active-link">
+        <mat-icon matListItemIcon>inventory</mat-icon>
+        <span matListItemTitle>Products & Categories</span>
+      </a>
+      <a mat-list-item routerLink="/sales" routerLinkActive="active-link">
+        <mat-icon matListItemIcon>point_of_sale</mat-icon>
+        <span matListItemTitle>Sales & Returns</span>
+      </a>
+      <a mat-list-item routerLink="/suppliers" routerLinkActive="active-link">
+        <mat-icon matListItemIcon>local_shipping</mat-icon>
+        <span matListItemTitle>Suppliers</span>
+      </a>
+      @if (!isEmployee) {
+        <div class="nav-section-label">Management</div>
+        <a mat-list-item routerLink="/analytics" routerLinkActive="active-link">
+          <mat-icon matListItemIcon>bar_chart</mat-icon>
+          <span matListItemTitle>Analytics</span>
+        </a>
+        <a mat-list-item routerLink="/team" routerLinkActive="active-link">
+          <mat-icon matListItemIcon>group</mat-icon>
+          <span matListItemTitle>Team</span>
+        </a>
+      }
+    </mat-nav-list>
+
+    <!-- Notification Panel — renders inline above the footer when open -->
+    @if (showNotifications) {
+      <div class="notif-panel">
+        <div class="notif-header">
+          <mat-icon class="notif-header-icon">notifications_active</mat-icon>
+          <span class="notif-header-title">Stock Alerts</span>
+          @if (lowStockCount > 0) {
+            <span class="notif-count">{{ lowStockCount }}</span>
+          }
+          <button mat-icon-button class="notif-close" (click)="closeNotifications()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+
+        @if (lowStockProducts.length === 0) {
+          <div class="notif-empty">
+            <mat-icon>check_circle</mat-icon>
+            <span>All products well stocked</span>
+          </div>
+        } @else {
+          <div class="notif-list">
+            @for (p of lowStockProducts.slice(0, 6); track p.id) {
+              <div class="notif-item">
+                <div class="notif-item-info">
+                  <span class="notif-name">{{ p.name }}</span>
+                  <span class="notif-detail">{{ p.quantity }} {{ p.unit }} · min {{ p.min_stock_level }}</span>
+                </div>
+                <span class="stock-pill" [class.pill-out]="p.quantity === 0">
+                  {{ p.quantity === 0 ? 'Out' : 'Low' }}
+                </span>
+              </div>
+            }
+            @if (lowStockProducts.length > 6) {
+              <div class="notif-more">+{{ lowStockProducts.length - 6 }} more products</div>
+            }
+          </div>
+
+          <div class="notif-footer">
+            <a mat-button routerLink="/products" (click)="closeNotifications()">
+              <mat-icon>arrow_forward</mat-icon>
+              View all products
+            </a>
+          </div>
+        }
+      </div>
+    }
+
+    <div class="sidenav-footer">
+      <button
+        mat-button
+        class="qr-btn"
+        [disabled]="qrLoading"
+        (click)="showMobileQR()"
+        matTooltip="Generate mobile access QR code"
+      >
+        <mat-icon>qr_code</mat-icon>
+        <span>{{ qrLoading ? 'Generating...' : 'Mobile QR' }}</span>
+      </button>
+
+      <div class="footer-user">
+        <div class="user-info">
+          <mat-icon>account_circle</mat-icon>
+          <div class="user-info-text">
+            <span>{{ currentUser?.name }}</span>
+            @if (isEmployee) {
+              <span class="role-badge">Employee</span>
+            }
+          </div>
+        </div>
+        <div class="footer-actions">
+          <button
+            mat-icon-button
+            (click)="toggleNotifications()"
+            [matBadge]="lowStockCount"
+            matBadgeColor="warn"
+            [matBadgeHidden]="lowStockCount === 0"
+            matBadgeSize="small"
+            [matTooltip]="lowStockCount > 0 ? lowStockCount + ' low-stock alerts' : 'Stock alerts'"
+          >
+            <mat-icon>{{ lowStockCount > 0 ? 'notifications_active' : 'notifications' }}</mat-icon>
+          </button>
+          <button mat-icon-button (click)="logout()" matTooltip="Logout">
+            <mat-icon>logout</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="main-content">
+    @if (isMobile) {
+      <div class="mobile-topbar">
+        <button mat-icon-button class="mobile-menu-btn" (click)="sidenavOpened = !sidenavOpened">
+          <mat-icon>menu</mat-icon>
+        </button>
+        <div class="mobile-brand">
+          <mat-icon>inventory_2</mat-icon>
+          <span>StockPilot</span>
+        </div>
+      </div>
+    }
+    <div class="page-body">
+      <router-outlet />
+    </div>
+  </mat-sidenav-content>
+
+</mat-sidenav-container>

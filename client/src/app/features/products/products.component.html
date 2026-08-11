@@ -1,0 +1,349 @@
+<div class="inventory-layout">
+
+  <!-- LEFT: Products Panel -->
+  <div class="inv-panel">
+    <div class="panel-header">
+      <div class="panel-title-wrap">
+        <h1>Products</h1>
+        <p class="panel-desc">Manage inventory, track stock levels</p>
+      </div>
+      <div class="header-actions">
+        @if (cart.length > 0) {
+          <button mat-flat-button color="primary" class="checkout-btn" (click)="openCheckout()">
+            <mat-icon>point_of_sale</mat-icon>
+            Checkout ({{ cart.length }})
+          </button>
+        }
+        <button mat-stroked-button (click)="csvInput.click()">
+          <mat-icon>upload_file</mat-icon> Import CSV
+        </button>
+        <input #csvInput type="file" accept=".csv" (change)="onImportCsv($event)" hidden />
+        <button mat-icon-button matTooltip="Customize form fields" (click)="openFormSettings()">
+          <mat-icon>tune</mat-icon>
+        </button>
+        <button mat-flat-button (click)="openDialog()">
+          <mat-icon>add</mat-icon> Add Product
+        </button>
+      </div>
+    </div>
+
+    <div class="panel-tabs">
+      <button class="tab-btn" [class.tab-btn--active]="productTab === 'active'"
+              (click)="productTab = 'active'">
+        <mat-icon>inventory_2</mat-icon>
+        Active ({{ products.length }})
+      </button>
+      <button class="tab-btn" [class.tab-btn--active]="productTab === 'trash'"
+              (click)="productTab = 'trash'">
+        <mat-icon>delete_outline</mat-icon>
+        Trash
+        @if (deletedProducts.length > 0) {
+          <span class="tab-badge">{{ deletedProducts.length }}</span>
+        }
+      </button>
+    </div>
+
+    @if (loading) {
+      <div class="spinner-wrap"><mat-spinner diameter="48" /></div>
+    } @else if (productTab === 'active') {
+
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search products…</mat-label>
+        <input matInput [value]="productSearch" (input)="onProductSearch($event)" />
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+
+      <div class="stock-filters">
+        <button class="sf-chip sf-chip--all"
+                [class.sf-chip--on]="stockFilter === 'all'"
+                (click)="setStockFilter('all')">
+          <span class="sf-dot"></span>
+          All
+          <span class="sf-count">{{ stockCounts.all }}</span>
+        </button>
+        <button class="sf-chip sf-chip--in"
+                [class.sf-chip--on]="stockFilter === 'in-stock'"
+                (click)="setStockFilter('in-stock')">
+          <span class="sf-dot"></span>
+          In Stock
+          <span class="sf-count">{{ stockCounts.inStock }}</span>
+        </button>
+        <button class="sf-chip sf-chip--low"
+                [class.sf-chip--on]="stockFilter === 'low-stock'"
+                (click)="setStockFilter('low-stock')">
+          <span class="sf-dot"></span>
+          Low Stock
+          <span class="sf-count">{{ stockCounts.lowStock }}</span>
+        </button>
+        <button class="sf-chip sf-chip--out"
+                [class.sf-chip--on]="stockFilter === 'out-of-stock'"
+                (click)="setStockFilter('out-of-stock')">
+          <span class="sf-dot"></span>
+          Out of Stock
+          <span class="sf-count">{{ stockCounts.outStock }}</span>
+        </button>
+      </div>
+
+      <mat-card>
+        <mat-card-content>
+          <table mat-table [dataSource]="filteredProducts" class="full-width">
+
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef>Name</th>
+              <td mat-cell *matCellDef="let row">
+                <span class="product-name">{{ row.name }}</span>
+                @if (row.sku) { <span class="sku-badge">{{ row.sku }}</span> }
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="price">
+              <th mat-header-cell *matHeaderCellDef>Price</th>
+              <td mat-cell *matCellDef="let row">{{ currencySymbol(row.currency) }}{{ row.price | number:'1.2-2' }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="quantity">
+              <th mat-header-cell *matHeaderCellDef>Stock</th>
+              <td mat-cell *matCellDef="let row">
+                <span [class.low-stock]="+row.quantity <= +row.min_stock_level && +row.quantity > 0"
+                      [class.out-of-stock]="+row.quantity === 0">
+                  {{ row.quantity }} {{ row.unit }}
+                </span>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="category">
+              <th mat-header-cell *matHeaderCellDef>Category</th>
+              <td mat-cell *matCellDef="let row">{{ row.category_name || '—' }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="supplier">
+              <th mat-header-cell *matHeaderCellDef>Supplier</th>
+              <td mat-cell *matCellDef="let row">{{ row.supplier_name || '—' }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef></th>
+              <td mat-cell *matCellDef="let row">
+                <div class="actions-cell">
+                  <button mat-icon-button
+                          [matTooltip]="isInCart(row) ? 'Remove from cart' : 'Add to cart'"
+                          [class.cart-active]="isInCart(row)"
+                          (click)="toggleCart(row)">
+                    <mat-icon>{{ isInCart(row) ? 'shopping_cart' : 'add_shopping_cart' }}</mat-icon>
+                  </button>
+                  <button mat-icon-button matTooltip="Stock history" (click)="openHistory(row)">
+                    <mat-icon>history</mat-icon>
+                  </button>
+                  <button mat-icon-button matTooltip="Edit" (click)="openDialog(row)">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button mat-icon-button matTooltip="Delete" color="warn" (click)="delete(row)">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="columns"></tr>
+            <tr mat-row *matRowDef="let row; columns: columns;"></tr>
+          </table>
+
+          @if (filteredProducts.length === 0) {
+            <div class="empty-state">
+              @if (productSearch) { No products match your search. }
+              @else { No products yet. Add one or import a CSV. }
+            </div>
+          }
+        </mat-card-content>
+      </mat-card>
+
+    } @else {
+
+      <!-- Deleted Products Trash -->
+      @if (deletedProducts.length === 0) {
+        <div class="trash-empty-state">
+          <mat-icon>delete_outline</mat-icon>
+          <p>No deleted products.</p>
+        </div>
+      } @else {
+        <mat-card class="trash-card">
+          <mat-card-content>
+            <table mat-table [dataSource]="deletedProducts" class="full-width trash-table">
+
+              <ng-container matColumnDef="dp_name">
+                <th mat-header-cell *matHeaderCellDef>Name</th>
+                <td mat-cell *matCellDef="let row">
+                  <span class="trash-name">{{ row.name }}</span>
+                  @if (row.sku) { <span class="sku-badge">{{ row.sku }}</span> }
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="dp_category">
+                <th mat-header-cell *matHeaderCellDef>Category</th>
+                <td mat-cell *matCellDef="let row">{{ row.category_name || '—' }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="dp_deleted_at">
+                <th mat-header-cell *matHeaderCellDef>Deleted</th>
+                <td mat-cell *matCellDef="let row">{{ row.deleted_at | date:'dd MMM yyyy' }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="dp_days_left">
+                <th mat-header-cell *matHeaderCellDef>Days Left</th>
+                <td mat-cell *matCellDef="let row">
+                  <span [class.days-urgent]="daysLeft(row.deleted_at) <= 5">
+                    {{ daysLeft(row.deleted_at) }}d
+                  </span>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="dp_restore">
+                <th mat-header-cell *matHeaderCellDef></th>
+                <td mat-cell *matCellDef="let row">
+                  <button mat-icon-button color="primary" matTooltip="Restore product" (click)="restoreProduct(row)">
+                    <mat-icon>restore</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="deletedProductColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: deletedProductColumns;"></tr>
+            </table>
+          </mat-card-content>
+        </mat-card>
+      }
+
+    }
+  </div>
+
+  <!-- RIGHT: Categories Panel -->
+  <div class="inv-panel inv-panel--categories">
+    <div class="panel-header">
+      <div class="panel-title-wrap">
+        <h1>Categories</h1>
+        <p class="panel-desc">Organize products by group</p>
+      </div>
+      <button mat-flat-button (click)="openCategoryDialog()">
+        <mat-icon>add</mat-icon> Add Category
+      </button>
+    </div>
+
+    <div class="panel-tabs">
+      <button class="tab-btn" [class.tab-btn--active]="categoryTab === 'active'"
+              (click)="categoryTab = 'active'">
+        <mat-icon>label</mat-icon>
+        Active ({{ categories.length }})
+      </button>
+      <button class="tab-btn" [class.tab-btn--active]="categoryTab === 'trash'"
+              (click)="categoryTab = 'trash'">
+        <mat-icon>delete_outline</mat-icon>
+        Trash
+        @if (deletedCategories.length > 0) {
+          <span class="tab-badge">{{ deletedCategories.length }}</span>
+        }
+      </button>
+    </div>
+
+    @if (loading) {
+      <div class="spinner-wrap"><mat-spinner diameter="48" /></div>
+    } @else if (categoryTab === 'active') {
+
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search categories…</mat-label>
+        <input matInput [value]="categorySearch" (input)="onCategorySearch($event)" />
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+
+      <mat-card>
+        <mat-card-content>
+          <table mat-table [dataSource]="filteredCategories" class="full-width">
+
+            <ng-container matColumnDef="cat_name">
+              <th mat-header-cell *matHeaderCellDef>Name</th>
+              <td mat-cell *matCellDef="let row">{{ row.name }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="cat_product_count">
+              <th mat-header-cell *matHeaderCellDef>Products</th>
+              <td mat-cell *matCellDef="let row">{{ row.product_count }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="cat_actions">
+              <th mat-header-cell *matHeaderCellDef></th>
+              <td mat-cell *matCellDef="let row">
+                <div class="actions-cell">
+                  <button mat-icon-button matTooltip="Edit" (click)="openCategoryDialog(row)">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button mat-icon-button matTooltip="Delete" color="warn" (click)="deleteCategory(row)">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="categoryColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: categoryColumns;"></tr>
+          </table>
+
+          @if (filteredCategories.length === 0) {
+            <div class="empty-state">
+              @if (categorySearch) { No categories match your search. }
+              @else { No categories yet. Add one above. }
+            </div>
+          }
+        </mat-card-content>
+      </mat-card>
+
+    } @else {
+
+      <!-- Deleted Categories Trash -->
+      @if (deletedCategories.length === 0) {
+        <div class="trash-empty-state">
+          <mat-icon>delete_outline</mat-icon>
+          <p>No deleted categories.</p>
+        </div>
+      } @else {
+        <mat-card class="trash-card">
+          <mat-card-content>
+            <table mat-table [dataSource]="deletedCategories" class="full-width trash-table">
+
+              <ng-container matColumnDef="dc_name">
+                <th mat-header-cell *matHeaderCellDef>Name</th>
+                <td mat-cell *matCellDef="let row"><span class="trash-name">{{ row.name }}</span></td>
+              </ng-container>
+
+              <ng-container matColumnDef="dc_deleted_at">
+                <th mat-header-cell *matHeaderCellDef>Deleted</th>
+                <td mat-cell *matCellDef="let row">{{ row.deleted_at | date:'dd MMM yyyy' }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="dc_days_left">
+                <th mat-header-cell *matHeaderCellDef>Days Left</th>
+                <td mat-cell *matCellDef="let row">
+                  <span [class.days-urgent]="daysLeft(row.deleted_at) <= 5">
+                    {{ daysLeft(row.deleted_at) }}d
+                  </span>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="dc_restore">
+                <th mat-header-cell *matHeaderCellDef></th>
+                <td mat-cell *matCellDef="let row">
+                  <button mat-icon-button color="primary" matTooltip="Restore category" (click)="restoreCategory(row)">
+                    <mat-icon>restore</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="deletedCategoryColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: deletedCategoryColumns;"></tr>
+            </table>
+          </mat-card-content>
+        </mat-card>
+      }
+
+    }
+  </div>
+
+</div>

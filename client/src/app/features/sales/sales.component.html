@@ -1,0 +1,211 @@
+<div class="page-header">
+  <div class="page-title-group">
+    <div class="page-title">
+      <h1>Sales &amp; Returns</h1>
+      @if (isEmployee) {
+        <span class="scope-badge">Showing your sales only</span>
+      }
+    </div>
+    <p class="page-desc">Record transactions and manage returns</p>
+  </div>
+  <button mat-flat-button (click)="openNewSaleDialog()">
+    <mat-icon>add_shopping_cart</mat-icon> New Sale
+  </button>
+</div>
+
+<!-- ── Date Filter Bar ───────────────────────────────────────────────────── -->
+<div class="date-filter-bar" [class.date-filter-bar--active]="startDate && endDate">
+  <mat-icon class="dfb-icon">date_range</mat-icon>
+  <span class="dfb-label">Filter by date</span>
+  <mat-form-field appearance="outline" subscriptSizing="dynamic" class="date-range-field">
+    <mat-label>Select date range</mat-label>
+    <mat-date-range-input [rangePicker]="rangePicker">
+      <input matStartDate [(ngModel)]="startDate" placeholder="Start date" />
+      <input matEndDate [(ngModel)]="endDate" placeholder="End date" />
+    </mat-date-range-input>
+    <mat-datepicker-toggle matIconSuffix [for]="rangePicker"></mat-datepicker-toggle>
+    <mat-date-range-picker #rangePicker (closed)="onPickerClosed()"></mat-date-range-picker>
+  </mat-form-field>
+  @if (startDate || endDate) {
+    <button mat-icon-button class="dfb-clear" matTooltip="Clear date filter" (click)="clearDateFilter()">
+      <mat-icon>close</mat-icon>
+    </button>
+  }
+</div>
+
+<!-- ── Sales History ──────────────────────────────────────────────────────── -->
+
+<div class="section-header">
+  <div class="section-header-left">
+    <span class="section-dot dot-indigo"></span>
+    <h2 class="section-title">Sales History</h2>
+  </div>
+  <mat-form-field appearance="outline" class="filter-field">
+    <mat-label>Filter by product</mat-label>
+    <mat-icon matPrefix>search</mat-icon>
+    <input matInput [value]="productFilter" (input)="onFilter($event)" />
+  </mat-form-field>
+</div>
+
+@if (loading) {
+  <div class="spinner-wrap"><mat-spinner diameter="48" /></div>
+} @else {
+  <mat-card class="table-card">
+    <mat-card-content>
+      <table mat-table [dataSource]="filteredSales" class="full-width">
+
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef>#</th>
+          <td mat-cell *matCellDef="let row">#{{ row.id }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="product_names">
+          <th mat-header-cell *matHeaderCellDef>Products</th>
+          <td mat-cell *matCellDef="let row" class="products-cell">{{ row.product_names || '—' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="category_names">
+          <th mat-header-cell *matHeaderCellDef>Categories</th>
+          <td mat-cell *matCellDef="let row" class="categories-cell">{{ row.category_names || '—' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="total_amount">
+          <th mat-header-cell *matHeaderCellDef>Total</th>
+          <td mat-cell *matCellDef="let row" class="amount">${{ row.usd_total | number:'1.2-2' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="item_count">
+          <th mat-header-cell *matHeaderCellDef>Items</th>
+          <td mat-cell *matCellDef="let row" class="center">{{ row.item_count }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="performed_by">
+          <th mat-header-cell *matHeaderCellDef>Processed By</th>
+          <td mat-cell *matCellDef="let row">{{ row.performed_by || '—' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="created_at">
+          <th mat-header-cell *matHeaderCellDef>Date</th>
+          <td mat-cell *matCellDef="let row">{{ row.created_at | date:'dd MMM yyyy, HH:mm' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="return_status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let row">
+            @if (row.all_returned) {
+              <span class="rs-badge rs-badge--returned">
+                <mat-icon>check_circle</mat-icon> Returned
+              </span>
+            } @else if (row.has_return) {
+              <span class="rs-badge rs-badge--partial">
+                <mat-icon>assignment_return</mat-icon> Partial
+              </span>
+            }
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let row" class="actions-cell">
+            @if (row.all_returned) {
+              <span class="returned-badge fully-returned" matTooltip="All items in this sale have been returned">
+                <mat-icon>check_circle</mat-icon> Fully Returned
+              </span>
+            } @else {
+              <button mat-stroked-button color="warn" class="return-btn"
+                      [matTooltip]="row.has_return ? 'Process another return for this sale' : 'Process a return for this sale'"
+                      (click)="openReturnDialog(row)">
+                <mat-icon>assignment_return</mat-icon>
+                {{ row.has_return ? 'Partial Return' : 'Return' }}
+              </button>
+            }
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="salesColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: salesColumns;"
+            [class.returned-row]="row.all_returned"></tr>
+      </table>
+
+      @if (filteredSales.length === 0) {
+        @if (sales.length === 0) {
+          <div class="empty-state">No sales recorded yet. Click "New Sale" to add one.</div>
+        } @else {
+          <div class="empty-state">No sales match the current filters.</div>
+        }
+      }
+    </mat-card-content>
+  </mat-card>
+}
+
+<!-- ── Returns History ────────────────────────────────────────────────────── -->
+
+<div class="section-header returns-section-header">
+  <div class="section-header-left">
+    <span class="section-dot dot-amber"></span>
+    <h2 class="section-title">Returns History</h2>
+  </div>
+</div>
+
+@if (!loading) {
+  @if (returns.length === 0) {
+    <div class="empty-state-returns">
+      <mat-icon>assignment_return</mat-icon>
+      <p>No returns yet</p>
+      <span>Processed returns will appear here.</span>
+    </div>
+  } @else if (filteredReturns.length === 0) {
+    <div class="empty-state-returns">
+      <mat-icon>filter_list_off</mat-icon>
+      <p>No returns in this range</p>
+      <span>Try adjusting the date filter above.</span>
+    </div>
+  } @else {
+    <mat-card class="table-card">
+      <mat-card-content>
+        <table mat-table [dataSource]="filteredReturns" class="full-width">
+
+          <ng-container matColumnDef="return_number">
+            <th mat-header-cell *matHeaderCellDef>Return #</th>
+            <td mat-cell *matCellDef="let r"><strong>#{{ r.return_number }}</strong></td>
+          </ng-container>
+
+          <ng-container matColumnDef="sale_id">
+            <th mat-header-cell *matHeaderCellDef>Sale</th>
+            <td mat-cell *matCellDef="let r">Sale #{{ r.sale_id }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="product_names">
+            <th mat-header-cell *matHeaderCellDef>Products</th>
+            <td mat-cell *matCellDef="let r" class="products-cell">{{ r.product_names || '—' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="reason">
+            <th mat-header-cell *matHeaderCellDef>Reason</th>
+            <td mat-cell *matCellDef="let r">
+              <span class="reason-badge reason-{{ r.reason }}">{{ reasonLabel(r.reason) }}</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="total_refund">
+            <th mat-header-cell *matHeaderCellDef>Refund</th>
+            <td mat-cell *matCellDef="let r" class="amount">${{ r.total_refund | number:'1.2-2' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="performed_by">
+            <th mat-header-cell *matHeaderCellDef>Processed By</th>
+            <td mat-cell *matCellDef="let r">{{ r.performed_by || '—' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="created_at">
+            <th mat-header-cell *matHeaderCellDef>Date</th>
+            <td mat-cell *matCellDef="let r">{{ r.created_at | date:'dd MMM yyyy, HH:mm' }}</td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="returnsColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: returnsColumns;"></tr>
+        </table>
+      </mat-card-content>
+    </mat-card>
+  }
+}
